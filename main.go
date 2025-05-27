@@ -2,7 +2,6 @@ package main
 
 import (
 	"errors"
-	"net/http"
 
 	"github.com/gin-gonic/gin"
 )
@@ -28,8 +27,7 @@ func main() {
 	r := gin.Default()
 
 	bindGamesAPI(r)
-
-	r.GET("/players", indexPlayers)
+	bindPlayersAPI(r)
 
 	r.Run()
 }
@@ -41,10 +39,6 @@ var newGameID = 2
 var players = []*Player{
 	{ID: 1, Name: "Alice"},
 	{ID: 2, Name: "Bob"},
-}
-
-func indexPlayers(c *gin.Context) {
-	c.IndentedJSON(http.StatusOK, players)
 }
 
 func findPlayer(id int) (*Player, error) {
