@@ -1,4 +1,4 @@
-package main
+package handlers
 
 import (
 	"lenkton/51/models"
@@ -7,7 +7,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func bindPlayersAPI(r *gin.Engine) {
+func BindPlayersAPI(r *gin.Engine) {
 	r.GET("/players", indexPlayers)
 }
 
