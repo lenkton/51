@@ -1,6 +1,7 @@
 package main
 
 import (
+	"lenkton/51/models"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -11,5 +12,5 @@ func bindPlayersAPI(r *gin.Engine) {
 }
 
 func indexPlayers(c *gin.Context) {
-	c.IndentedJSON(http.StatusOK, players)
+	c.IndentedJSON(http.StatusOK, models.AllPlayers())
 }

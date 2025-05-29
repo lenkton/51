@@ -1,10 +1,9 @@
 package main
 
 import (
-	"errors"
+	"lenkton/51/models"
 	"net/http"
 	"slices"
-	"strconv"
 
 	"github.com/gin-gonic/gin"
 )
@@ -17,7 +16,7 @@ func bindGamesAPI(r *gin.Engine) {
 }
 
 func indexGames(c *gin.Context) {
-	c.IndentedJSON(http.StatusOK, games)
+	c.IndentedJSON(http.StatusOK, models.AllGames())
 }
 
 type joinGameDTO struct {
@@ -26,7 +25,7 @@ type joinGameDTO struct {
 
 func joinGame(c *gin.Context) {
 	id := c.Param("id")
-	game, err := findGame(id)
+	game, err := models.FindGame(id)
 	if err != nil {
 		c.IndentedJSON(http.StatusNotFound, gin.H{"error": "Game Not Found"})
 		return
@@ -36,7 +35,7 @@ func joinGame(c *gin.Context) {
 		c.IndentedJSON(http.StatusUnprocessableEntity, err)
 		return
 	}
-	player, err := findPlayer(requestBody.UserID)
+	player, err := models.FindPlayer(requestBody.UserID)
 	if err != nil {
 		c.IndentedJSON(http.StatusNotFound, gin.H{"error": "Player Not Found"})
 		return
@@ -51,7 +50,7 @@ func joinGame(c *gin.Context) {
 }
 func getGame(c *gin.Context) {
 	id := c.Param("id")
-	game, err := findGame(id)
+	game, err := models.FindGame(id)
 	if err != nil {
 		c.IndentedJSON(http.StatusNotFound, gin.H{"error": "Game Not Found"})
 		return
@@ -59,23 +58,7 @@ func getGame(c *gin.Context) {
 	c.IndentedJSON(http.StatusOK, game)
 }
 func createGame(c *gin.Context) {
-	game := Game{Turns: make([]Turn, 0), Players: make([]*Player, 0), ID: newGameID}
-
-	newGameID++
-	games = append(games, &game)
+	game := models.CreateGame()
 
 	c.IndentedJSON(http.StatusCreated, game)
-}
-
-func findGame(id string) (*Game, error) {
-	intID, err := strconv.Atoi(id)
-	if err != nil {
-		return nil, err
-	}
-	for _, g := range games {
-		if g.ID == intID {
-			return g, nil
-		}
-	}
-	return nil, errors.New("Game Not Found")
 }
