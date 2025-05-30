@@ -1,0 +1,17 @@
+{{ define "main_page/index.html" }}
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>51</title>
+    </head>
+    <body>
+        <h1>Hello!</h1>
+        <h2>Games</h2>
+        <ul id="games-list">
+            {{ range $game := .games }}
+            <li><a href="/games/{{ $game.ID }}">{{ $game.ID }}</a></li>
+            {{ end }}
+        </ul>
+    </body>
+</html>
+{{ end }}
