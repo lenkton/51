@@ -48,7 +48,21 @@ func joinGame(c *gin.Context) {
 
 	c.IndentedJSON(http.StatusOK, game)
 }
+
 func getGame(c *gin.Context) {
+	id := c.Param("id")
+	game, err := models.FindGame(id)
+	if err != nil {
+		// TODO: add some 404
+		c.IndentedJSON(http.StatusNotFound, gin.H{"error": "Game Not Found"})
+		return
+	}
+	c.HTML(http.StatusOK, "games/show.html", gin.H{
+		"game": game,
+	})
+}
+
+func getGameJSON(c *gin.Context) {
 	id := c.Param("id")
 	game, err := models.FindGame(id)
 	if err != nil {

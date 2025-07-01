@@ -1,0 +1,18 @@
+{{ define "games/show.html" }}
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>51</title>
+    </head>
+    <body>
+        <h1>Hello!</h1>
+        <h2>Game {{ .game.ID }}</h2>
+        <h3>Players</h3>
+        <ul id="players-list">
+            {{ range $player := .game.Players }}
+                <li>{{ $player.Name }}</li>
+            {{ end }}
+        </ul>
+    </body>
+</html>
+{{ end }}
