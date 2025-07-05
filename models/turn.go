@@ -1,7 +1,8 @@
 package models
 
+// TODO: make Dice and Result private
 type Turn struct {
 	ID     int `json:"id"`
-	dice   int
-	result int
+	Dice   int
+	Result int
 }

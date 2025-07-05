@@ -8,7 +8,7 @@ import (
 type Game struct {
 	ID            int       `json:"id"`
 	CurrentPlayer *Player   `json:"currentPlayer"`
-	Turns         []Turn    `json:"turns"`
+	Turns         []*Turn   `json:"turns"`
 	Players       []*Player `json:"players"`
 }
 
@@ -31,7 +31,7 @@ func FindGame(id string) (*Game, error) {
 
 func CreateGame() *Game {
 	game := Game{
-		Turns:   make([]Turn, 0),
+		Turns:   make([]*Turn, 0),
 		Players: make([]*Player, 0),
 		ID:      newGameID,
 	}

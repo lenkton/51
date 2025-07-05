@@ -64,9 +64,18 @@ func getGame(c *gin.Context) {
 			user = nil
 		}
 	}
+	turns := game.Turns
+	rounds := make([][]*models.Turn, 0)
+	for i, turn := range turns {
+		if i%len(game.Players) == 0 {
+			rounds = append(rounds, make([]*models.Turn, 0))
+		}
+		rounds[len(rounds)-1] = append(rounds[len(rounds)-1], turn)
+	}
 	c.HTML(http.StatusOK, "games/show.html", gin.H{
-		"game": game,
-		"user": user,
+		"game":   game,
+		"user":   user,
+		"rounds": rounds,
 	})
 }
 

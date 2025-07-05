@@ -3,6 +3,12 @@
 <html>
     <head>
         <title>51</title>
+        <style>
+            table, tr, th, td {
+                border: 1px solid black;
+                border-collapse: collapse;
+            }
+        </style>
         <script>
             function joinGame(gameId, userName) {
                 event.preventDefault();
@@ -30,6 +36,20 @@
             <input name="userName" type="text" placeholder="Enter your COOL nickname!">
             <input type="submit" value="Join">
         </form>
+        <table id="turns">
+            <tr>
+                {{ range $player := .game.Players }}
+                <th>{{$player.Name}}</th>
+                {{ end }}
+            </tr>
+            {{ range $round := .rounds }}
+            <tr>
+                {{ range $turn := $round }}
+                <td>{{$turn.Result}}</td>
+                {{ end }}
+            </tr>
+            {{ end }}
+        </table>
     </body>
 </html>
 {{ end }}
