@@ -52,16 +52,7 @@ func joinGame(c *gin.Context) {
 
 func getGame(c *gin.Context) {
 	game := c.MustGet("game").(*models.Game)
-	userStringID, err := c.Cookie("user_id")
-	var user *models.Player
-	if err == nil {
-		var userID int
-		fmt.Sscan(userStringID, &userID)
-		user, err = models.FindPlayer(userID)
-		if err != nil {
-			user = nil
-		}
-	}
+	user, _ := findUser(c)
 	turns := game.Turns
 	rounds := make([][]*models.Turn, 0)
 	for i, turn := range turns {
@@ -91,6 +82,17 @@ func middlewareFindGame(c *gin.Context) {
 		return
 	}
 	c.Set("game", game)
+}
+
+func findUser(c *gin.Context) (*models.Player, error) {
+	userStringID, err := c.Cookie("user_id")
+	var user *models.Player
+	if err == nil {
+		var userID int
+		fmt.Sscan(userStringID, &userID)
+		user, err = models.FindPlayer(userID)
+	}
+	return user, err
 }
 
 func rollDice(c *gin.Context) {
