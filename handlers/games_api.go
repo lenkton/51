@@ -6,6 +6,7 @@ import (
 	"lenkton/51/models"
 	"log"
 	"net/http"
+	"slices"
 
 	"github.com/gin-gonic/gin"
 	"github.com/gorilla/websocket"
@@ -29,6 +30,22 @@ func indexGames(c *gin.Context) {
 
 func joinGame(c *gin.Context) {
 	game := c.MustGet("game").(*models.Game)
+	player, err := findUser(c)
+	if err == nil {
+		joinAuthed(c, game, player)
+	} else {
+		joinUnauthed(c, game)
+	}
+}
+
+func joinAuthed(c *gin.Context, game *models.Game, player *models.Player) {
+	if !slices.Contains(game.Players, player) {
+		game.Players = append(game.Players, player)
+	}
+	c.IndentedJSON(http.StatusOK, game)
+}
+
+func joinUnauthed(c *gin.Context, game *models.Game) {
 	var requestBody struct {
 		UserName string `json:"userName"`
 	}
