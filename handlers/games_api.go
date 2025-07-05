@@ -13,6 +13,7 @@ func BindGamesAPI(r *gin.Engine) {
 	r.POST("/games", createGame)
 	r.GET("/games/:id", getGame)
 	r.POST("/games/:id/join", joinGame)
+	r.POST("/games/:id/roll", rollDice)
 }
 
 func indexGames(c *gin.Context) {
@@ -92,4 +93,23 @@ func createGame(c *gin.Context) {
 	game := models.CreateGame()
 
 	c.IndentedJSON(http.StatusCreated, game)
+}
+
+func rollDice(c *gin.Context) {
+	id := c.Param("id")
+	game, err := models.FindGame(id)
+	if err != nil {
+		c.IndentedJSON(http.StatusNotFound, gin.H{"error": "Game Not Found"})
+		return
+	}
+	var requestBody struct {
+		Dice int `json:"dice"`
+	}
+	if err := c.ShouldBindJSON(&requestBody); err != nil {
+		// TODO: add sane error messages
+		c.IndentedJSON(http.StatusUnprocessableEntity, gin.H{"error": err.Error()})
+		return
+	}
+	turn := models.CreateTurn(game, requestBody.Dice)
+	c.IndentedJSON(http.StatusOK, turn)
 }

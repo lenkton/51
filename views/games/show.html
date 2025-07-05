@@ -10,6 +10,13 @@
             }
         </style>
         <script>
+            function roll(dice) {
+                event.preventDefault();
+                fetch("/games/"+{{.game.ID}}+"/roll",
+                    { method:"POST", body: JSON.stringify({ dice: parseInt(dice, 10) }) })
+                    .then((response) => response.json())
+                    .then((v) => console.log(v));
+            }
             function joinGame(gameId, userName) {
                 event.preventDefault();
                 fetch("/games/"+gameId+"/join",
@@ -50,6 +57,15 @@
             </tr>
             {{ end }}
         </table>
+        <form method="post" action="/games/{{.game.ID}}/roll" onsubmit="roll(dice.value)">
+            <select name="dice">
+                <option value="4">d4</option>
+                <option value="12">d12</option>
+                <option value="20" selected>d20</option>
+                <option value="100">d100</option>
+            </select>
+            <input type="submit" value="Roll!">
+        </form>
     </body>
 </html>
 {{ end }}

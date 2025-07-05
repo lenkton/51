@@ -6,6 +6,7 @@ var games = []*Game{
 
 var newGameID = 2
 var newPlayerID = 3
+var newTurnID = 1
 var players = []*Player{
 	{ID: 1, Name: "Alice"},
 	{ID: 2, Name: "Bob"},
