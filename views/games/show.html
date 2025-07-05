@@ -41,6 +41,20 @@
                     row.appendChild(th);
                 };
             }
+            function addTurn(turn) {
+                const gameTable = document.getElementById('turns');
+
+                const playersCount = gameTable.rows[0].cells.length;
+
+                const rows = gameTable.rows;
+                const lastTurnInRound = rows[rows.length-1].cells.length == playersCount;
+                if (lastTurnInRound) {
+                    gameTable.insertRow(-1);
+                }
+                const lastRow = rows[rows.length-1];
+                let td = lastRow.insertCell(-1);
+                td.appendChild(document.createTextNode(turn.result));
+            }
             function connectToGameUpdates(gameId) {
                 const url = "/games/" + gameId + "/updates";
                 ws = new WebSocket(url);
@@ -51,6 +65,9 @@
                         switch (msg.type) {
                             case "newPlayer":
                                 addPlayer(msg.player);
+                                break;
+                            case "newTurn":
+                                addTurn(msg.turn);
                                 break;
                         }
                     }

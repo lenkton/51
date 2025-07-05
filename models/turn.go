@@ -5,8 +5,8 @@ import "math/rand"
 // TODO: make Dice and Result private
 type Turn struct {
 	ID     int `json:"id"`
-	Dice   int
-	Result int
+	Dice   int `json:"dice"`
+	Result int `json:"result"`
 }
 
 func CreateTurn(game *Game, dice int) *Turn {

@@ -119,6 +119,10 @@ func rollDice(c *gin.Context) {
 		return
 	}
 	turn := models.CreateTurn(game, requestBody.Dice)
+	game.News.Publish(models.NewsMessage{
+		"type": "newTurn",
+		"turn": turn,
+	})
 	c.IndentedJSON(http.StatusOK, turn)
 }
 
