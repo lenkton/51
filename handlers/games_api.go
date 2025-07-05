@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"fmt"
 	"lenkton/51/models"
 	"net/http"
 
@@ -39,6 +40,8 @@ func joinGame(c *gin.Context) {
 	// TODO: check if the player has already entered the game
 	player := models.CreatePlayer(requestBody.UserName)
 	game.Players = append(game.Players, player)
+	c.SetCookie("user_id", fmt.Sprint(player.ID), 1000000, "/", "localhost", false, true)
+	c.SetCookie("user_name", player.Name, 1000000, "/", "localhost", false, true)
 
 	c.IndentedJSON(http.StatusOK, game)
 }
@@ -51,8 +54,19 @@ func getGame(c *gin.Context) {
 		c.IndentedJSON(http.StatusNotFound, gin.H{"error": "Game Not Found"})
 		return
 	}
+	userStringID, err := c.Cookie("user_id")
+	var user *models.Player
+	if err == nil {
+		var userID int
+		fmt.Sscan(userStringID, &userID)
+		user, err = models.FindPlayer(userID)
+		if err != nil {
+			user = nil
+		}
+	}
 	c.HTML(http.StatusOK, "games/show.html", gin.H{
 		"game": game,
+		"user": user,
 	})
 }
 
