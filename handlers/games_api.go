@@ -1,11 +1,14 @@
 package handlers
 
 import (
+	"encoding/json"
 	"fmt"
 	"lenkton/51/models"
+	"log"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
+	"github.com/gorilla/websocket"
 )
 
 func BindGamesAPI(r *gin.Engine) {
@@ -14,6 +17,7 @@ func BindGamesAPI(r *gin.Engine) {
 	r.GET("/games/:id", getGame)
 	r.POST("/games/:id/join", joinGame)
 	r.POST("/games/:id/roll", rollDice)
+	r.GET("/games/:id/updates", connectToGameUpdates)
 }
 
 func indexGames(c *gin.Context) {
@@ -41,6 +45,10 @@ func joinGame(c *gin.Context) {
 	// TODO: check if the player has already entered the game
 	player := models.CreatePlayer(requestBody.UserName)
 	game.Players = append(game.Players, player)
+	game.News.Publish(models.NewsMessage{
+		"type":   "newPlayer",
+		"player": player,
+	})
 	c.SetCookie("user_id", fmt.Sprint(player.ID), 1000000, "/", "localhost", false, true)
 	c.SetCookie("user_name", player.Name, 1000000, "/", "localhost", false, true)
 
@@ -112,4 +120,49 @@ func rollDice(c *gin.Context) {
 	}
 	turn := models.CreateTurn(game, requestBody.Dice)
 	c.IndentedJSON(http.StatusOK, turn)
+}
+
+var upgrader = websocket.Upgrader{
+	ReadBufferSize:  1024,
+	WriteBufferSize: 1024,
+}
+
+func connectToGameUpdates(c *gin.Context) {
+	id := c.Param("id")
+	game, err := models.FindGame(id)
+	if err != nil {
+		c.IndentedJSON(http.StatusNotFound, gin.H{"error": "Game Not Found"})
+		return
+	}
+	w, r := c.Writer, c.Request
+	conn, err := upgrader.Upgrade(w, r, nil)
+	if err != nil {
+		log.Println(err)
+		return
+	}
+	defer conn.Close()
+	subscription_id := game.News.Subscribe(func(m models.NewsMessage) {
+		data, err := json.Marshal(m)
+		if err != nil {
+			log.Println(err)
+			return
+		}
+		if err := conn.WriteMessage(1, data); err != nil {
+			log.Println(err)
+			return
+		}
+	})
+	for {
+		messageType, p, err := conn.ReadMessage()
+		if err != nil {
+			log.Println(err)
+			break
+		}
+		if err := conn.WriteMessage(messageType, p); err != nil {
+			log.Println(err)
+			break
+		}
+	}
+	game.News.Unsubscribe(subscription_id)
+	log.Println("seems like we have unsubscribed")
 }

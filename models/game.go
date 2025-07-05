@@ -10,6 +10,7 @@ type Game struct {
 	CurrentPlayer *Player   `json:"currentPlayer"`
 	Turns         []*Turn   `json:"turns"`
 	Players       []*Player `json:"players"`
+	News          *NewsCenter
 }
 
 func AllGames() []*Game {
@@ -34,6 +35,7 @@ func CreateGame() *Game {
 		Turns:   make([]*Turn, 0),
 		Players: make([]*Player, 0),
 		ID:      newGameID,
+		News:    NewNewsCenter(),
 	}
 
 	newGameID++

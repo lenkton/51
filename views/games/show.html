@@ -24,9 +24,47 @@
                     .then((response) => response.json())
                     .then((v) => console.log(v));
             }
+            function addPlayer(player) {
+                const playerList = document.getElementById('players-list');
+                const gameTable = document.getElementById('turns');
+
+                let li = document.createElement("li");
+                li.appendChild(document.createTextNode(player.name));
+                playerList.appendChild(li);
+
+                const rows = gameTable.getElementsByTagName("tr");
+                // WARN: i assume, we have only one row (only the heading)
+                for (let row of rows) {
+                    // todo: if i is 0 then th, otherwise - td
+                    let th = document.createElement("th");
+                    th.appendChild(document.createTextNode(player.name));
+                    row.appendChild(th);
+                };
+            }
+            function connectToGameUpdates(gameId) {
+                const url = "/games/" + gameId + "/updates";
+                ws = new WebSocket(url);
+                ws.onmessage = (event) => {
+                    console.log("I have received an update from the server: "+event.data);
+                    if (event.data[0] == '{') {
+                        const msg = JSON.parse(event.data);
+                        switch (msg.type) {
+                            case "newPlayer":
+                                addPlayer(msg.player);
+                                break;
+                        }
+                    }
+                };
+                ws.onopen = (event) => {
+                    ws.send("12312");
+                };
+            }
         </script>
     </head>
     <body>
+        <script>
+            connectToGameUpdates({{.game.ID}});
+        </script>
         {{if eq .user nil }} 
         <h1>Hello!</h1>
         {{else}}

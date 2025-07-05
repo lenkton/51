@@ -2,7 +2,10 @@ module lenkton/51
 
 go 1.23.3
 
-require github.com/gin-gonic/gin v1.10.1
+require (
+	github.com/gin-gonic/gin v1.10.1
+	github.com/gorilla/websocket v1.5.3
+)
 
 require (
 	github.com/bytedance/sonic v1.11.6 // indirect
