@@ -27,14 +27,11 @@ func indexGames(c *gin.Context) {
 	c.IndentedJSON(http.StatusOK, models.AllGames())
 }
 
-type joinGameDTO struct {
-	// UserID int `json:"userId"`
-	UserName string `json:"userName"`
-}
-
 func joinGame(c *gin.Context) {
 	game := c.MustGet("game").(*models.Game)
-	var requestBody joinGameDTO
+	var requestBody struct {
+		UserName string `json:"userName"`
+	}
 	if err := c.ShouldBindJSON(&requestBody); err != nil {
 		// TODO: add sane error messages
 		c.IndentedJSON(http.StatusUnprocessableEntity, gin.H{"error": err.Error()})
