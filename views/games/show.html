@@ -3,6 +3,15 @@
 <html>
     <head>
         <title>51</title>
+        <script>
+            function joinGame(gameId, userName) {
+                event.preventDefault();
+                fetch("/games/"+gameId+"/join",
+                    { method:"POST", body: JSON.stringify({ userName: userName }) })
+                    .then((response) => response.json())
+                    .then((v) => console.log(v));
+            }
+        </script>
     </head>
     <body>
         <h1>Hello!</h1>
@@ -13,6 +22,10 @@
                 <li>{{ $player.Name }}</li>
             {{ end }}
         </ul>
+        <form method="post" action="/games/{{.game.ID}}/join" onsubmit="joinGame({{.game.ID}}, userName.value); return false">
+            <input name="userName" type="text" placeholder="Enter your COOL nickname!">
+            <input type="submit" value="Join">
+        </form>
     </body>
 </html>
 {{ end }}

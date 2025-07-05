@@ -19,3 +19,15 @@ func FindPlayer(id int) (*Player, error) {
 	}
 	return nil, errors.New("Player Not Found")
 }
+
+func CreatePlayer(name string) *Player {
+	player := Player{
+		ID:   newPlayerID,
+		Name: name,
+	}
+
+	newPlayerID++
+	players = append(players, &player)
+
+	return &player
+}
