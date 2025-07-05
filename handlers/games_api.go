@@ -88,15 +88,6 @@ func getGame(c *gin.Context) {
 	})
 }
 
-func getGameJSON(c *gin.Context) {
-	id := c.Param("id")
-	game, err := models.FindGame(id)
-	if err != nil {
-		c.IndentedJSON(http.StatusNotFound, gin.H{"error": "Game Not Found"})
-		return
-	}
-	c.IndentedJSON(http.StatusOK, game)
-}
 func createGame(c *gin.Context) {
 	game := models.CreateGame()
 
