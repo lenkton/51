@@ -5,12 +5,21 @@ import (
 	"strconv"
 )
 
+type gameStatus string
+
+const (
+	Created  gameStatus = "created"
+	Started  gameStatus = "started"
+	Finished gameStatus = "finished"
+)
+
 type Game struct {
-	ID            int       `json:"id"`
-	CurrentPlayer *Player   `json:"currentPlayer"`
-	Turns         []*Turn   `json:"turns"`
-	Players       []*Player `json:"players"`
-	News          *NewsCenter
+	ID            int         `json:"id"`
+	CurrentPlayer *Player     `json:"currentPlayer"`
+	Turns         []*Turn     `json:"turns"`
+	Players       []*Player   `json:"players"`
+	News          *NewsCenter `json:"-"`
+	Status        gameStatus  `json:"status"`
 }
 
 func AllGames() []*Game {
@@ -36,6 +45,7 @@ func CreateGame() *Game {
 		Players: make([]*Player, 0),
 		ID:      newGameID,
 		News:    NewNewsCenter(),
+		Status:  Created,
 	}
 
 	newGameID++

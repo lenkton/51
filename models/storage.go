@@ -1,7 +1,14 @@
 package models
 
 var games = []*Game{
-	{ID: 1, CurrentPlayer: nil, Players: make([]*Player, 0), Turns: make([]*Turn, 0), News: &NewsCenter{callbacks: make(map[int]func(NewsMessage))}},
+	{
+		ID:            1,
+		CurrentPlayer: nil,
+		Players:       make([]*Player, 0),
+		Turns:         make([]*Turn, 0),
+		News:          &NewsCenter{callbacks: make(map[int]func(NewsMessage))},
+		Status:        Created,
+	},
 }
 
 var newGameID = 2
