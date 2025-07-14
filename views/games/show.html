@@ -24,6 +24,16 @@
                     .then((response) => response.json())
                     .then((v) => console.log(v));
             }
+            function startGame(gameId) {
+                fetch(`/games/${gameId}/start`, { method: "POST" })
+                    .then((response) => {
+                        if (!response.ok) {
+                            response.json().then((message) => {
+                                console.log(message.error);
+                            });
+                        };
+                    });
+            }
             function addPlayer(player) {
                 const playerList = document.getElementById('players-list');
                 const gameTable = document.getElementById('turns');
@@ -89,6 +99,9 @@
         {{end}}
         <h2 id="game-heading">Game {{ .game.ID }} ({{.game.Status}})</h2>
         <h3>Players</h3>
+        <ul id="actions">
+            <li><button onclick="startGame('{{.game.ID}}')">Start</button></li>
+        </ul>
         <ul id="players-list">
             {{ range $player := .game.Players }}
                 <li>{{ $player.Name }}</li>

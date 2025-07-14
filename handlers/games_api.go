@@ -18,6 +18,7 @@ func BindGamesAPI(r *gin.Engine) {
 		withGame.POST("/join", joinGame)
 		withGame.POST("/roll", rollDice)
 		withGame.GET("/updates", connectToGameUpdates)
+		withGame.POST("/start", startGame)
 	}
 }
 
@@ -125,4 +126,15 @@ func rollDice(c *gin.Context) {
 		"turn": turn,
 	})
 	c.IndentedJSON(http.StatusOK, turn)
+}
+
+func startGame(c *gin.Context) {
+	game := c.MustGet("game").(*models.Game)
+	err := game.Start()
+	if err == nil {
+		c.JSON(http.StatusOK, game)
+	} else {
+		// TODO: sane error messages
+		c.JSON(http.StatusUnprocessableEntity, gin.H{"error": err.Error()})
+	}
 }

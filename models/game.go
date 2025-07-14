@@ -2,6 +2,7 @@ package models
 
 import (
 	"errors"
+	"fmt"
 	"strconv"
 )
 
@@ -52,4 +53,13 @@ func CreateGame() *Game {
 	games = append(games, &game)
 
 	return &game
+}
+
+func (game *Game) Start() error {
+	if game.Status != Created {
+		return fmt.Errorf("cannot start a game in the %s state", game.Status)
+	}
+
+	game.Status = Started
+	return nil
 }
