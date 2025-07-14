@@ -28,6 +28,13 @@ func indexGames(c *gin.Context) {
 
 func joinGame(c *gin.Context) {
 	game := c.MustGet("game").(*models.Game)
+	if !game.JoinAllowed() {
+		c.JSON(
+			http.StatusForbidden,
+			gin.H{"error": "joining to this game is not allowed"},
+		)
+		return
+	}
 	player, err := findUser(c)
 	if err == nil {
 		joinAuthed(c, game, player)

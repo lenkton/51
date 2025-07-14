@@ -63,3 +63,11 @@ func (game *Game) Start() error {
 	game.Status = Started
 	return nil
 }
+
+func (game *Game) JoinAllowed() bool {
+	if game.Status == Created {
+		return true
+	} else {
+		return false
+	}
+}
