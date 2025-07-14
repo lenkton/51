@@ -85,7 +85,11 @@ func (game *Game) CanMakeTurns() bool {
 	}
 }
 
-func (game *Game) CreateTurn(dice int) *Turn {
+func (game *Game) CreateTurn(player *Player, dice int) (*Turn, error) {
+	if player != game.CurrentPlayer {
+		return nil, errors.New("it is another player's turn")
+	}
+
 	turn := Turn{
 		ID:     newTurnID,
 		Dice:   dice,
@@ -95,5 +99,8 @@ func (game *Game) CreateTurn(dice int) *Turn {
 	newTurnID++
 	game.Turns = append(game.Turns, &turn)
 
-	return &turn
+	nextPlayerIndex := len(game.Turns) % len(game.Players)
+	game.CurrentPlayer = game.Players[nextPlayerIndex]
+
+	return &turn, nil
 }

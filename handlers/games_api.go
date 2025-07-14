@@ -16,9 +16,9 @@ func BindGamesAPI(r *gin.Engine) {
 	{
 		withGame.GET("", getGame)
 		withGame.POST("/join", joinGame)
-		withGame.POST("/roll", rollDice)
+		withGame.POST("/roll", middlewareFindUser, rollDice)
 		withGame.GET("/updates", connectToGameUpdates)
-		withGame.POST("/start", startGame)
+		withGame.POST("/start", middlewareFindUser, startGame)
 	}
 }
 
@@ -106,6 +106,15 @@ func middlewareFindGame(c *gin.Context) {
 	c.Set("game", game)
 }
 
+func middlewareFindUser(c *gin.Context) {
+	user, err := findUser(c)
+	if err != nil {
+		c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "only logged in users can make turns"})
+		return
+	}
+	c.Set("user", user)
+}
+
 func findUser(c *gin.Context) (*models.Player, error) {
 	userStringID, err := c.Cookie("user_id")
 	var user *models.Player
@@ -118,6 +127,7 @@ func findUser(c *gin.Context) (*models.Player, error) {
 }
 
 func rollDice(c *gin.Context) {
+	player := c.MustGet("user").(*models.Player)
 	game := c.MustGet("game").(*models.Game)
 	if !game.CanMakeTurns() {
 		c.JSON(http.StatusForbidden, gin.H{"error": "you cannot make a turn now"})
@@ -131,7 +141,11 @@ func rollDice(c *gin.Context) {
 		c.IndentedJSON(http.StatusUnprocessableEntity, gin.H{"error": err.Error()})
 		return
 	}
-	turn := game.CreateTurn(requestBody.Dice)
+	turn, err := game.CreateTurn(player, requestBody.Dice)
+	if err != nil {
+		c.JSON(http.StatusUnprocessableEntity, gin.H{"error": err.Error()})
+		return
+	}
 	game.News.Publish(models.NewsMessage{
 		"type": "newTurn",
 		"turn": turn,
