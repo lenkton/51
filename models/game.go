@@ -59,8 +59,12 @@ func (game *Game) Start() error {
 	if game.Status != Created {
 		return fmt.Errorf("cannot start a game in the %s state", game.Status)
 	}
+	if len(game.Players) < 1 {
+		return errors.New("cannot start a game: need at least 1 player")
+	}
 
 	game.Status = Started
+	game.CurrentPlayer = game.Players[0]
 	return nil
 }
 
