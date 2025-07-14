@@ -9,7 +9,7 @@
         <h2>Games</h2>
         <ul id="games-list">
             {{ range $game := .games }}
-            <li><a href="/games/{{ $game.ID }}">{{ $game.ID }}</a></li>
+            <li><a href="/games/{{ $game.ID }}">{{ $game.ID }}</a> ({{$game.Status}})</li>
             {{ end }}
         </ul>
     </body>

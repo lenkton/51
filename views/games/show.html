@@ -87,7 +87,7 @@
         {{else}}
         <h1>Hello, {{.user.Name}}!</h1>
         {{end}}
-        <h2>Game {{ .game.ID }}</h2>
+        <h2 id="game-heading">Game {{ .game.ID }} ({{.game.Status}})</h2>
         <h3>Players</h3>
         <ul id="players-list">
             {{ range $player := .game.Players }}
