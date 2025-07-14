@@ -131,7 +131,7 @@ func rollDice(c *gin.Context) {
 		c.IndentedJSON(http.StatusUnprocessableEntity, gin.H{"error": err.Error()})
 		return
 	}
-	turn := models.CreateTurn(game, requestBody.Dice)
+	turn := game.CreateTurn(requestBody.Dice)
 	game.News.Publish(models.NewsMessage{
 		"type": "newTurn",
 		"turn": turn,

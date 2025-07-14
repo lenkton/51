@@ -3,6 +3,7 @@ package models
 import (
 	"errors"
 	"fmt"
+	"math/rand"
 	"strconv"
 )
 
@@ -82,4 +83,17 @@ func (game *Game) CanMakeTurns() bool {
 	} else {
 		return false
 	}
+}
+
+func (game *Game) CreateTurn(dice int) *Turn {
+	turn := Turn{
+		ID:     newTurnID,
+		Dice:   dice,
+		Result: rand.Intn(dice) + 1,
+	}
+
+	newTurnID++
+	game.Turns = append(game.Turns, &turn)
+
+	return &turn
 }
