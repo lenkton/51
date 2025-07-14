@@ -119,6 +119,10 @@ func findUser(c *gin.Context) (*models.Player, error) {
 
 func rollDice(c *gin.Context) {
 	game := c.MustGet("game").(*models.Game)
+	if !game.CanMakeTurns() {
+		c.JSON(http.StatusForbidden, gin.H{"error": "you cannot make a turn now"})
+		return
+	}
 	var requestBody struct {
 		Dice int `json:"dice"`
 	}

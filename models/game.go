@@ -71,3 +71,11 @@ func (game *Game) JoinAllowed() bool {
 		return false
 	}
 }
+
+func (game *Game) CanMakeTurns() bool {
+	if game.Status == Started {
+		return true
+	} else {
+		return false
+	}
+}
