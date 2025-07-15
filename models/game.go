@@ -132,3 +132,15 @@ func (game *Game) CreateTurn(player *Player, dice int) (*Turn, error) {
 
 	return &turn, nil
 }
+
+func (game *Game) MustPlayerTotal(player *Player) int {
+	playerIndex := slices.Index(game.Players, player)
+	if playerIndex == -1 {
+		panic("PlayerTotal: player is not in the game")
+	}
+	res := 0
+	for i := playerIndex; i < len(game.Turns); i += len(game.Players) {
+		res += game.Turns[i].Result
+	}
+	return res
+}

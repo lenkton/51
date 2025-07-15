@@ -37,7 +37,7 @@
         <table id="turns">
             <tr>
                 {{ range $player := .game.Players }}
-                <th>{{$player.Name}}</th>
+                <th>{{$player.Name}} ({{$.game.MustPlayerTotal $player}})</th>
                 {{ end }}
             </tr>
             {{ range $round := .rounds }}

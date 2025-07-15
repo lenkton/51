@@ -35,7 +35,7 @@ function addPlayer(player) {
     for (let row of rows) {
         // todo: if i is 0 then th, otherwise - td
         let th = document.createElement("th");
-        th.appendChild(document.createTextNode(player.name));
+        th.appendChild(document.createTextNode(player.name + " (0)"));
         row.appendChild(th);
     };
 }
@@ -52,7 +52,20 @@ function addTurn(turn) {
     const lastRow = rows[rows.length-1];
     let td = lastRow.insertCell(-1);
     td.appendChild(document.createTextNode(turn.result));
+
+    updatePlayerTotal(lastRow.cells.length-1, turn.result);
 }
+
+const NameTotalRE = /(.*) \((\d*)\)$/;
+function updatePlayerTotal(playerIndex, toAdd) {
+    const gameTable = document.getElementById('turns');
+    let nameCell = gameTable.rows[0].cells[playerIndex];
+    let nameAndTotal = nameCell.innerText;
+    const [name, total] = NameTotalRE.exec(nameAndTotal).slice(1);
+    const newTotal = +total + +toAdd;
+    nameCell.innerText = `${name} (${newTotal})`;
+}
+
 function updateHeading(game) {
     let heading = document.getElementById('game-heading');
     heading.innerText = `Game ${game.id} (${game.status})`;
