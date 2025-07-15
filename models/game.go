@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"math/rand"
+	"slices"
 	"strconv"
 )
 
@@ -77,6 +78,24 @@ func (game *Game) JoinAllowed() bool {
 	}
 }
 
+// NOTE: maybe we could save time by introducing a flag
+// that the user was created just now (so 100% not in the list)
+func (game *Game) MustJoin(player *Player) {
+	if player == nil {
+		panic("MustJoin: nil player pointer")
+	}
+	if slices.Contains(game.Players, player) {
+		return
+	}
+
+	game.Players = append(game.Players, player)
+
+	game.News.Publish(NewsMessage{
+		"type":   "newPlayer",
+		"player": player,
+	})
+}
+
 func (game *Game) CanMakeTurns() bool {
 	if game.Status == Started {
 		return true
@@ -101,6 +120,11 @@ func (game *Game) CreateTurn(player *Player, dice int) (*Turn, error) {
 
 	nextPlayerIndex := len(game.Turns) % len(game.Players)
 	game.CurrentPlayer = game.Players[nextPlayerIndex]
+
+	game.News.Publish(NewsMessage{
+		"type": "newTurn",
+		"turn": turn,
+	})
 
 	return &turn, nil
 }

@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"lenkton/51/models"
 	"net/http"
-	"slices"
 
 	"github.com/gin-gonic/gin"
 )
@@ -44,9 +43,7 @@ func joinGame(c *gin.Context) {
 }
 
 func joinAuthed(c *gin.Context, game *models.Game, player *models.Player) {
-	if !slices.Contains(game.Players, player) {
-		game.Players = append(game.Players, player)
-	}
+	game.MustJoin(player)
 	c.IndentedJSON(http.StatusOK, game)
 }
 
@@ -59,13 +56,10 @@ func joinUnauthed(c *gin.Context, game *models.Game) {
 		c.IndentedJSON(http.StatusUnprocessableEntity, gin.H{"error": err.Error()})
 		return
 	}
-	// TODO: check if the player has already entered the game
+
 	player := models.CreatePlayer(requestBody.UserName)
-	game.Players = append(game.Players, player)
-	game.News.Publish(models.NewsMessage{
-		"type":   "newPlayer",
-		"player": player,
-	})
+	game.MustJoin(player)
+
 	c.SetCookie("user_id", fmt.Sprint(player.ID), 1000000, "/", "localhost", false, true)
 	c.SetCookie("user_name", player.Name, 1000000, "/", "localhost", false, true)
 
@@ -146,10 +140,6 @@ func rollDice(c *gin.Context) {
 		c.JSON(http.StatusUnprocessableEntity, gin.H{"error": err.Error()})
 		return
 	}
-	game.News.Publish(models.NewsMessage{
-		"type": "newTurn",
-		"turn": turn,
-	})
 	c.IndentedJSON(http.StatusOK, turn)
 }
 
