@@ -11,6 +11,8 @@ func main() {
 
 	r.LoadHTMLGlob("views/**/*")
 
+	r.Static("/static", "./static")
+
 	handlers.BindMainPage(r)
 	handlers.BindGamesAPI(r)
 	handlers.BindPlayersAPI(r)
