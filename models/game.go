@@ -67,6 +67,10 @@ func (game *Game) Start() error {
 
 	game.Status = Started
 	game.CurrentPlayer = game.Players[0]
+	game.News.Publish(NewsMessage{
+		"type": "gameStarted",
+		"game": game,
+	})
 	return nil
 }
 

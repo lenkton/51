@@ -65,6 +65,10 @@
                 let td = lastRow.insertCell(-1);
                 td.appendChild(document.createTextNode(turn.result));
             }
+            function updateHeading(game) {
+                let heading = document.getElementById('game-heading');
+                heading.innerText = `Game ${game.id} (${game.status})`;
+            }
             function connectToGameUpdates(gameId) {
                 const url = "/games/" + gameId + "/updates";
                 ws = new WebSocket(url);
@@ -78,6 +82,9 @@
                                 break;
                             case "newTurn":
                                 addTurn(msg.turn);
+                                break;
+                            case "gameStarted":
+                                updateHeading(msg.game);
                                 break;
                         }
                     }
