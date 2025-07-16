@@ -13,6 +13,6 @@ func BindMainPage(r *gin.Engine) {
 
 func getMainPage(c *gin.Context) {
 	c.HTML(http.StatusOK, "main_page/index.html", gin.H{
-		"games": models.AllGames(),
+		"games": models.MainStorage.AllGames(),
 	})
 }

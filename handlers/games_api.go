@@ -22,7 +22,7 @@ func BindGamesAPI(r *gin.Engine) {
 }
 
 func indexGames(c *gin.Context) {
-	c.IndentedJSON(http.StatusOK, models.AllGames())
+	c.IndentedJSON(http.StatusOK, models.MainStorage.AllGames())
 }
 
 func joinGame(c *gin.Context) {
@@ -57,7 +57,7 @@ func joinUnauthed(c *gin.Context, game *models.Game) {
 		return
 	}
 
-	player := models.CreatePlayer(requestBody.UserName)
+	player := models.MainStorage.CreatePlayer(requestBody.UserName)
 	game.MustJoin(player)
 
 	c.SetCookie("user_id", fmt.Sprint(player.ID), 1000000, "/", "localhost", false, true)
@@ -85,14 +85,14 @@ func getGame(c *gin.Context) {
 }
 
 func createGame(c *gin.Context) {
-	game := models.CreateGame()
+	game := models.MainStorage.CreateGame()
 
 	c.IndentedJSON(http.StatusCreated, game)
 }
 
 func middlewareFindGame(c *gin.Context) {
 	id := c.Param("id")
-	game, err := models.FindGame(id)
+	game, err := models.MainStorage.FindGame(id)
 	if err != nil {
 		c.AbortWithStatusJSON(http.StatusNotFound, gin.H{"error": "Game Not Found"})
 		return
@@ -115,7 +115,7 @@ func findUser(c *gin.Context) (*models.Player, error) {
 	if err == nil {
 		var userID int
 		fmt.Sscan(userStringID, &userID)
-		user, err = models.FindPlayer(userID)
+		user, err = models.MainStorage.FindPlayer(userID)
 	}
 	return user, err
 }
@@ -135,7 +135,7 @@ func rollDice(c *gin.Context) {
 		c.IndentedJSON(http.StatusUnprocessableEntity, gin.H{"error": err.Error()})
 		return
 	}
-	turn, err := game.CreateTurn(player, requestBody.Dice)
+	turn, err := models.MainStorage.CreateTurn(game, player, requestBody.Dice)
 	if err != nil {
 		c.JSON(http.StatusUnprocessableEntity, gin.H{"error": err.Error()})
 		return

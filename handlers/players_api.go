@@ -12,5 +12,5 @@ func BindPlayersAPI(r *gin.Engine) {
 }
 
 func indexPlayers(c *gin.Context) {
-	c.IndentedJSON(http.StatusOK, models.AllPlayers())
+	c.IndentedJSON(http.StatusOK, models.MainStorage.AllPlayers())
 }

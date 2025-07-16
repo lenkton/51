@@ -3,9 +3,7 @@ package models
 import (
 	"errors"
 	"fmt"
-	"math/rand"
 	"slices"
-	"strconv"
 )
 
 type gameStatus string
@@ -23,38 +21,6 @@ type Game struct {
 	Players       []*Player   `json:"players"`
 	News          *NewsCenter `json:"-"`
 	Status        gameStatus  `json:"status"`
-}
-
-func AllGames() []*Game {
-	return games
-}
-
-func FindGame(id string) (*Game, error) {
-	intID, err := strconv.Atoi(id)
-	if err != nil {
-		return nil, err
-	}
-	for _, g := range games {
-		if g.ID == intID {
-			return g, nil
-		}
-	}
-	return nil, errors.New("Game Not Found")
-}
-
-func CreateGame() *Game {
-	game := Game{
-		Turns:   make([]*Turn, 0),
-		Players: make([]*Player, 0),
-		ID:      newGameID,
-		News:    NewNewsCenter(),
-		Status:  Created,
-	}
-
-	newGameID++
-	games = append(games, &game)
-
-	return &game
 }
 
 func (game *Game) Start() error {
@@ -106,31 +72,6 @@ func (game *Game) CanMakeTurns() bool {
 	} else {
 		return false
 	}
-}
-
-func (game *Game) CreateTurn(player *Player, dice int) (*Turn, error) {
-	if player != game.CurrentPlayer {
-		return nil, errors.New("it is another player's turn")
-	}
-
-	turn := Turn{
-		ID:     newTurnID,
-		Dice:   dice,
-		Result: rand.Intn(dice) + 1,
-	}
-
-	newTurnID++
-	game.Turns = append(game.Turns, &turn)
-
-	nextPlayerIndex := len(game.Turns) % len(game.Players)
-	game.CurrentPlayer = game.Players[nextPlayerIndex]
-
-	game.News.Publish(NewsMessage{
-		"type": "newTurn",
-		"turn": turn,
-	})
-
-	return &turn, nil
 }
 
 func (game *Game) MustPlayerTotal(player *Player) int {
