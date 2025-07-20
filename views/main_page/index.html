@@ -3,6 +3,7 @@
 <html>
     <head>
         <title>51</title>
+        <script src="/static/js/app.js"></script>
     </head>
     <body>
         <h1>Hello!</h1>
@@ -12,6 +13,7 @@
             <li><a href="/games/{{ $game.ID }}">{{ $game.ID }}</a> ({{$game.Status}})</li>
             {{ end }}
         </ul>
+        <button onclick="createGame()">Create Game</button>
     </body>
 </html>
 {{ end }}

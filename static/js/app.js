@@ -12,6 +12,16 @@ function joinGame(gameId, userName) {
         .then((response) => response.json())
         .then((v) => console.log(v));
 }
+function createGame() {
+    fetch("/games", { method: "POST" })
+        .then((response) => {
+            if (response.ok) {
+                response.json().then((message)=>{
+                    document.location = "/games/" + message.id;
+                });
+            };
+        });
+}
 function startGame(gameId) {
     fetch(`/games/${gameId}/start`, { method: "POST" })
         .then((response) => {
