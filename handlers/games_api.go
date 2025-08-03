@@ -60,7 +60,8 @@ func joinUnauthed(c *gin.Context, game *models.Game) {
 	player := models.MainStorage.CreatePlayer(requestBody.UserName)
 	game.MustJoin(player)
 
-	hostname := c.Request.Host
+	// WARN: it could be empty?...
+	hostname := c.Request.URL.Hostname()
 	c.SetCookie("user_id", fmt.Sprint(player.ID), 1000000, "/", hostname, false, true)
 	c.SetCookie("user_name", player.Name, 1000000, "/", hostname, false, true)
 
