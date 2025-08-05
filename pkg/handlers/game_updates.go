@@ -2,11 +2,11 @@ package handlers
 
 import (
 	"encoding/json"
-	"lenkton/51/models"
 	"log"
 
 	"github.com/gin-gonic/gin"
 	"github.com/gorilla/websocket"
+	"github.com/lenkton/51/pkg/models"
 )
 
 var upgrader = websocket.Upgrader{

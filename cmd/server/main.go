@@ -1,9 +1,8 @@
 package main
 
 import (
-	"lenkton/51/handlers"
-
 	"github.com/gin-gonic/gin"
+	"github.com/lenkton/51/pkg/handlers"
 )
 
 func main() {

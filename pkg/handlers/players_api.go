@@ -1,10 +1,10 @@
 package handlers
 
 import (
-	"lenkton/51/models"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
+	"github.com/lenkton/51/pkg/models"
 )
 
 func BindPlayersAPI(r *gin.Engine) {

@@ -1,4 +1,4 @@
-module lenkton/51
+module github.com/lenkton/51
 
 go 1.23.3
 
