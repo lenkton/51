@@ -35,11 +35,12 @@ var MainStorage = Storage{
 
 func (s *Storage) CreateGame() *Game {
 	game := Game{
-		Turns:   make([]*Turn, 0),
-		Players: make([]*Player, 0),
-		ID:      s.lastGameID + 1,
-		News:    NewNewsCenter(),
-		Status:  Created,
+		Turns:         make([]*Turn, 0),
+		Players:       make([]*Player, 0),
+		ActivePlayers: make([]*Player, 0),
+		ID:            s.lastGameID + 1,
+		News:          NewNewsCenter(),
+		Status:        Created,
 	}
 
 	s.lastGameID++
@@ -95,6 +96,7 @@ func (s *Storage) CreateTurn(turn *Turn, game *Game) (*Turn, error) {
 	turn.ID = s.lastTurnID + 1
 	s.lastTurnID++
 
+	// should it be here?
 	game.Turns = append(game.Turns, turn)
 
 	return turn, nil

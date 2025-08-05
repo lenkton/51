@@ -17,8 +17,10 @@ const (
 type Game struct {
 	ID            int         `json:"id"`
 	CurrentPlayer *Player     `json:"currentPlayer"`
+	Winner        *Player     `json:"winner,omitempty"`
 	Turns         []*Turn     `json:"turns"`
 	Players       []*Player   `json:"players"`
+	ActivePlayers []*Player   `json:"active_players"`
 	News          *NewsCenter `json:"-"`
 	Status        gameStatus  `json:"status"`
 }
@@ -59,6 +61,7 @@ func (game *Game) MustJoin(player *Player) {
 	}
 
 	game.Players = append(game.Players, player)
+	game.ActivePlayers = append(game.ActivePlayers, player)
 
 	game.News.Publish(NewsMessage{
 		"type":   "newPlayer",
@@ -84,4 +87,15 @@ func (game *Game) MustPlayerTotal(player *Player) int {
 		res += game.Turns[i].Result
 	}
 	return res
+}
+
+func (game *Game) CompleteWithWinner(player *Player) {
+	game.ActivePlayers = []*Player{}
+	game.Status = Finished
+	game.Winner = player
+}
+
+func (game *Game) CompleteWithNoWinnter() {
+	game.ActivePlayers = []*Player{}
+	game.Status = Finished
 }

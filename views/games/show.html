@@ -22,6 +22,13 @@
         <h1>Hello, {{.user.Name}}!</h1>
         {{end}}
         <h2 id="game-heading">Game {{ .game.ID }} ({{.game.Status}})</h2>
+        {{ if eq .game.Status "finished" }}
+        {{ if eq .game.Winner nil}}
+        <p>No one is a winner</p>
+        {{ else }}
+        <p>The winner is <b>{{.game.Winner.Name}}</b></p>
+        {{ end }}
+        {{ end }}
         <h3>Players</h3>
         <ul id="actions">
             <li><button onclick="startGame('{{.game.ID}}')">Start</button></li>
@@ -51,7 +58,10 @@
         </table>
         <form method="post" action="/games/{{.game.ID}}/roll" onsubmit="roll('{{.game.ID}}', dice.value)">
             <select name="dice">
+                <option value="1">d1 (for cheating)</option>
                 <option value="4">d4</option>
+                <option value="6">d6</option>
+                <option value="10">d10</option>
                 <option value="12">d12</option>
                 <option value="20" selected>d20</option>
                 <option value="100">d100</option>
