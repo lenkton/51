@@ -6,6 +6,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/lenkton/51/pkg/models"
+	"github.com/lenkton/51/pkg/services/turn"
 )
 
 func BindGamesAPI(r *gin.Engine) {
@@ -137,7 +138,7 @@ func rollDice(c *gin.Context) {
 		c.IndentedJSON(http.StatusUnprocessableEntity, gin.H{"error": err.Error()})
 		return
 	}
-	turn, err := models.MainStorage.CreateTurn(game, player, requestBody.Dice)
+	turn, err := turn.MakeTurn(game, player, requestBody.Dice)
 	if err != nil {
 		c.JSON(http.StatusUnprocessableEntity, gin.H{"error": err.Error()})
 		return

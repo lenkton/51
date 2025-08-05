@@ -2,7 +2,6 @@ package models
 
 import (
 	"errors"
-	"math/rand"
 	"strconv"
 )
 
@@ -92,27 +91,11 @@ func (s *Storage) FindPlayer(id int) (*Player, error) {
 }
 
 // should i check the game pointer?
-func (s *Storage) CreateTurn(game *Game, player *Player, dice int) (*Turn, error) {
-	if player != game.CurrentPlayer {
-		return nil, errors.New("it is another player's turn")
-	}
-
-	turn := Turn{
-		ID:     s.lastTurnID + 1,
-		Dice:   dice,
-		Result: rand.Intn(dice) + 1,
-	}
-
+func (s *Storage) CreateTurn(turn *Turn, game *Game) (*Turn, error) {
+	turn.ID = s.lastTurnID + 1
 	s.lastTurnID++
-	game.Turns = append(game.Turns, &turn)
 
-	nextPlayerIndex := len(game.Turns) % len(game.Players)
-	game.CurrentPlayer = game.Players[nextPlayerIndex]
+	game.Turns = append(game.Turns, turn)
 
-	game.News.Publish(NewsMessage{
-		"type": "newTurn",
-		"turn": turn,
-	})
-
-	return &turn, nil
+	return turn, nil
 }
