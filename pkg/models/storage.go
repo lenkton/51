@@ -24,7 +24,7 @@ var MainStorage = Storage{
 			ID:            1,
 			CurrentPlayer: nil,
 			Players:       make([]*Player, 0),
-			Turns:         make([]*Turn, 0),
+			Turns:         make(map[int][]*Turn),
 			News:          &NewsCenter{callbacks: make(map[int]func(NewsMessage))},
 			Status:        Created,
 		},
@@ -35,7 +35,7 @@ var MainStorage = Storage{
 
 func (s *Storage) CreateGame() *Game {
 	game := Game{
-		Turns:         make([]*Turn, 0),
+		Turns:         make(map[int][]*Turn),
 		Players:       make([]*Player, 0),
 		ActivePlayers: make([]*Player, 0),
 		ID:            s.lastGameID + 1,
@@ -92,12 +92,12 @@ func (s *Storage) FindPlayer(id int) (*Player, error) {
 }
 
 // should i check the game pointer?
-func (s *Storage) CreateTurn(turn *Turn, game *Game) (*Turn, error) {
+func (s *Storage) CreateTurn(turn *Turn, game *Game, player *Player) (*Turn, error) {
 	turn.ID = s.lastTurnID + 1
 	s.lastTurnID++
 
 	// should it be here?
-	game.Turns = append(game.Turns, turn)
+	game.Turns[player.ID] = append(game.Turns[player.ID], turn)
 
 	return turn, nil
 }

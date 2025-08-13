@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"fmt"
+	"log"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -72,13 +73,18 @@ func joinUnauthed(c *gin.Context, game *models.Game) {
 func getGame(c *gin.Context) {
 	game := c.MustGet("game").(*models.Game)
 	user, _ := findUser(c)
-	turns := game.Turns
-	rounds := make([][]*models.Turn, 0)
-	for i, turn := range turns {
-		if i%len(game.Players) == 0 {
-			rounds = append(rounds, make([]*models.Turn, 0))
+
+	roundsCount := 0
+	for _, playerTurns := range game.Turns {
+		if playerTurnsCount := len(playerTurns); roundsCount < playerTurnsCount {
+			roundsCount = playerTurnsCount
 		}
-		rounds[len(rounds)-1] = append(rounds[len(rounds)-1], turn)
+	}
+	rounds := make([][]*models.Turn, roundsCount)
+	for _, player := range game.Players {
+		for i, turn := range game.Turns[player.ID] {
+			rounds[i] = append(rounds[i], turn)
+		}
 	}
 	c.HTML(http.StatusOK, "games/show.html", gin.H{
 		"game":   game,
@@ -126,7 +132,7 @@ func findUser(c *gin.Context) (*models.Player, error) {
 func rollDice(c *gin.Context) {
 	player := c.MustGet("user").(*models.Player)
 	game := c.MustGet("game").(*models.Game)
-	if !game.CanMakeTurns() {
+	if !game.CanMakeTurns(player) {
 		c.JSON(http.StatusForbidden, gin.H{"error": "you cannot make a turn now"})
 		return
 	}
@@ -138,8 +144,10 @@ func rollDice(c *gin.Context) {
 		c.IndentedJSON(http.StatusUnprocessableEntity, gin.H{"error": err.Error()})
 		return
 	}
+	// TODO: make logger with request ids
 	turn, err := turn.MakeTurn(game, player, requestBody.Dice)
 	if err != nil {
+		log.Printf("Error: cannot make turn: %v\n", err)
 		c.JSON(http.StatusUnprocessableEntity, gin.H{"error": err.Error()})
 		return
 	}

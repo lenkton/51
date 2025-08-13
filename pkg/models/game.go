@@ -15,14 +15,14 @@ const (
 )
 
 type Game struct {
-	ID            int         `json:"id"`
-	CurrentPlayer *Player     `json:"currentPlayer"`
-	Winner        *Player     `json:"winner,omitempty"`
-	Turns         []*Turn     `json:"turns"`
-	Players       []*Player   `json:"players"`
-	ActivePlayers []*Player   `json:"active_players"`
-	News          *NewsCenter `json:"-"`
-	Status        gameStatus  `json:"status"`
+	ID            int             `json:"id"`
+	CurrentPlayer *Player         `json:"currentPlayer"`
+	Winner        *Player         `json:"winner,omitempty"`
+	Turns         map[int][]*Turn `json:"turns"`
+	Players       []*Player       `json:"players"`
+	ActivePlayers []*Player       `json:"active_players"`
+	News          *NewsCenter     `json:"-"`
+	Status        gameStatus      `json:"status"`
 }
 
 func (game *Game) Start() error {
@@ -69,8 +69,8 @@ func (game *Game) MustJoin(player *Player) {
 	})
 }
 
-func (game *Game) CanMakeTurns() bool {
-	if game.Status == Started {
+func (game *Game) CanMakeTurns(p *Player) bool {
+	if game.Status == Started && game.CurrentPlayer.ID == p.ID {
 		return true
 	} else {
 		return false
@@ -83,8 +83,8 @@ func (game *Game) MustPlayerTotal(player *Player) int {
 		panic("PlayerTotal: player is not in the game")
 	}
 	res := 0
-	for i := playerIndex; i < len(game.Turns); i += len(game.Players) {
-		res += game.Turns[i].Result
+	for _, turn := range game.Turns[player.ID] {
+		res += turn.Result
 	}
 	return res
 }
@@ -98,4 +98,17 @@ func (game *Game) CompleteWithWinner(player *Player) {
 func (game *Game) CompleteWithNoWinnter() {
 	game.ActivePlayers = []*Player{}
 	game.Status = Finished
+}
+
+// WARN: it assumes, that the previous active player is still in the game
+func (game *Game) MoveToNextPlayer() {
+	previousCurrentPlayer := game.CurrentPlayer
+	previousIndex := slices.Index(game.ActivePlayers, previousCurrentPlayer)
+	// TODO: it should be an error, I suppose...
+	if previousIndex < 0 {
+		panic("Error: MoveToNextPlayer: current player is not an active player")
+	}
+	nextIndex := (previousIndex + 1) % len(game.ActivePlayers)
+
+	game.CurrentPlayer = game.ActivePlayers[nextIndex]
 }
