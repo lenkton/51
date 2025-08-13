@@ -95,7 +95,7 @@ func (game *Game) CompleteWithWinner(player *Player) {
 	game.Winner = player
 }
 
-func (game *Game) CompleteWithNoWinnter() {
+func (game *Game) CompleteWithNoWinner() {
 	game.ActivePlayers = []*Player{}
 	game.Status = Finished
 }

@@ -49,7 +49,7 @@ func checkPlayerTotal(player *models.Player, game *models.Game) {
 		)
 	}
 	if len(game.ActivePlayers) == 0 {
-		game.CompleteWithNoWinnter()
+		game.CompleteWithNoWinner()
 	}
 }
 
