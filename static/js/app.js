@@ -32,38 +32,66 @@ function startGame(gameId) {
             };
         });
 }
+
+var players = [];
 function addPlayer(player) {
+    players.push(player);
+    turns[player.id] = [];
+
     const playerList = document.getElementById('players-list');
-    const gameTable = document.getElementById('turns');
 
     let li = document.createElement("li");
     li.appendChild(document.createTextNode(player.name));
     playerList.appendChild(li);
 
-    const rows = gameTable.getElementsByTagName("tr");
-    // WARN: i assume, we have only one row (only the heading)
-    for (let row of rows) {
-        // todo: if i is 0 then th, otherwise - td
-        let th = document.createElement("th");
-        th.appendChild(document.createTextNode(player.name + " (0)"));
-        row.appendChild(th);
-    };
+    renderTurnsTable()
 }
-function addTurn(turn) {
-    const gameTable = document.getElementById('turns');
+// should be set in the HTML
+var turns = {};
+// TODO: do not rerender the whole table every time an update occurs
+function renderTurnsTable() {
+    let newTable = document.createElement('table');
+    let thead = document.createElement('thead');
+    let tbody = document.createElement('tbody');
+    newTable.appendChild(thead);
+    newTable.appendChild(tbody);
 
-    const playersCount = gameTable.rows[0].cells.length;
-
-    const rows = gameTable.rows;
-    const lastTurnInRound = rows[rows.length-1].cells.length == playersCount;
-    if (lastTurnInRound) {
-        gameTable.insertRow(-1);
+    let roundsCount = 0;
+    for (const player of players) {
+        const playerTurns = turns[player.id].length;
+        if (playerTurns > roundsCount) {
+            roundsCount = playerTurns;
+        }
     }
-    const lastRow = rows[rows.length-1];
-    let td = lastRow.insertCell(-1);
-    td.appendChild(document.createTextNode(turn.result));
+    for (let i = 0; i < roundsCount; i++) {
+        let row = tbody.insertRow();
+        for (const player of players) {
+            const turn = turns[player.id][i];
+            const newCell = row.insertCell();
+            if (turn != undefined) {
+                newCell.appendChild(document.createTextNode(turn.result))
+            }
+        }
+    }
+    const namesRow = thead.insertRow();
+    for (const player of players) {
+        let playerTotal = 0;
+        if (turns[player.id]) {
+            for (const turn of turns[player.id]) {
+                playerTotal += turn.result;
+            }
+        }
+        const nameCell = namesRow.appendChild(document.createElement('th'));
+        nameCell.appendChild(document.createTextNode(`${player.name} (${playerTotal})`))
+    }
 
-    updatePlayerTotal(lastRow.cells.length-1, turn.result);
+    const gameTable = document.getElementById('turns');
+    newTable.id = 'turns';
+    gameTable.replaceWith(newTable);
+}
+function addTurn(turn, player) {
+    turns[player.id].push(turn);
+    renderTurnsTable()
 }
 
 const NameTotalRE = /(.*) \((\d*)\)$/;
@@ -92,7 +120,7 @@ function connectToGameUpdates(gameId) {
                     addPlayer(msg.player);
                     break;
                 case "newTurn":
-                    addTurn(msg.turn);
+                    addTurn(msg.turn, msg.player);
                     break;
                 case "gameStarted":
                     updateHeading(msg.game);

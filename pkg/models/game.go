@@ -62,6 +62,7 @@ func (game *Game) MustJoin(player *Player) {
 
 	game.Players = append(game.Players, player)
 	game.ActivePlayers = append(game.ActivePlayers, player)
+	game.Turns[player.ID] = make([]*Turn, 0)
 
 	game.News.Publish(NewsMessage{
 		"type":   "newPlayer",

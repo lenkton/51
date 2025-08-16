@@ -20,7 +20,7 @@ func MakeTurn(game *models.Game, player *models.Player, dice int) (*models.Turn,
 	updateNextPlayer(game)
 	checkPlayerTotal(player, game)
 
-	publishNewTurn(turn, game)
+	publishNewTurn(turn, game, player)
 
 	return turn, err
 }
@@ -59,9 +59,10 @@ func updateNextPlayer(game *models.Game) {
 	game.MoveToNextPlayer()
 }
 
-func publishNewTurn(turn *models.Turn, game *models.Game) {
+func publishNewTurn(turn *models.Turn, game *models.Game, player *models.Player) {
 	game.News.Publish(models.NewsMessage{
-		"type": "newTurn",
-		"turn": turn,
+		"type":   "newTurn",
+		"turn":   turn,
+		"player": player,
 	})
 }

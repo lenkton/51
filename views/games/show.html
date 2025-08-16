@@ -42,20 +42,12 @@
             <input name="userName" type="text" placeholder="Enter your COOL nickname!">
             <input type="submit" value="Join">
         </form>
-        <table id="turns">
-            <tr>
-                {{ range $player := .game.Players }}
-                <th>{{$player.Name}} ({{$.game.MustPlayerTotal $player}})</th>
-                {{ end }}
-            </tr>
-            {{ range $round := .rounds }}
-            <tr>
-                {{ range $turn := $round }}
-                <td>{{$turn.Result}}</td>
-                {{ end }}
-            </tr>
-            {{ end }}
-        </table>
+        <table id="turns"></table>
+        <script>
+            players = {{.game.Players}};
+            turns = {{.game.Turns}};
+            renderTurnsTable()
+        </script>
         <form method="post" action="/games/{{.game.ID}}/roll" onsubmit="roll('{{.game.ID}}', dice.value)">
             <select name="dice">
                 <option value="1">d1 (for cheating)</option>
